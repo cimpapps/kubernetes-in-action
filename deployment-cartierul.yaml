@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: cartierul-dep
+  labels:
+    app: cartierul
+
+spec:
+  selector: 
+    matchLabels:
+      app: cartierul
+
+  template:
+    metadata:
+      name: cartierul
+      labels:
+        app: cartierul
+
+    spec:
+      containers:
+        - name: cartierul
+          image:  cimbonda/cartierul:v10
+          ports:
+            - name: cartierul-http
+              containerPort: 8282
+          env:
+            - name: PORT 
+              value: "8282"
+            - name: SPRING_DATA_MONGODB_URI
+              value: mongodb://mongodb-service:27017/test?retryWrites=true&w=majority
+
+
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: mongo-dep
+  labels:
+    app: mongo
+spec:
+  selector: 
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      name: mongo
+      labels:
+        app: mongo
+
+    spec:
+      containers:
+        - name: mongo
+          image:  mongo
+          ports:
+            - name: mongo-http
+              containerPort: 27017
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cartierul-svc
+spec:
+  selector:
+    app: cartierul
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: cartierul-http
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: mongo
+  ports:
+    - port: 27017
+      targetPort: mongo-http
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

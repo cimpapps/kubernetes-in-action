@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-yaml
+  labels:
+    app: nodeapp
+    rel: qualif
+
+spec:
+  containers:
+    - image: cimbonda/nodeapp:v1
+      name: myapp-yaml
+      ports:
+        - containerPort: 8181
+          protocol: TCP
+      livenessProbe:
+        httpGet:
+          path: /
+          port: 8181

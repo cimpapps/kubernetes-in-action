@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: fortune-dep
+  labels:
+    app: fortune
+
+spec: 
+  replicas: 3
+  selector:
+    matchLabels: 
+      app: fortune
+
+  template:
+    metadata:
+      labels:
+        app: fortune
+
+    spec:
+      containers:
+        - name: fortune
+          image: cimbonda/fortuneloop
+          volumeMounts:
+            - name: html
+              mountPath: /var/htdocs
+
+        - name: nginx
+          image: nginx:alpine
+          volumeMounts:
+            - name: html
+              mountPath: /usr/share/nginx/html
+              readOnly: true
+
+          ports:
+            - containerPort: 80
+              name: nginx
+              protocol: TCP
+      volumes:
+        - name: html
+          emptyDir: {}
